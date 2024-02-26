@@ -11,10 +11,10 @@ library(ggplot2)
 library(ggthemes)
 library(reshape)
 # read data from the excel file =========================================================================================================================================================
-data <- read_excel("E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\Responses_Pilot1_10Participants_2024-02-15.xlsx")
+data <- read_excel("C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\Responses_Main1_150Participants_2024-02-23.xlsx")
 DensityData <- data[data[,3]=="Density",]
 # Group Density =========================================================================================================================================================================
-NP=10                                                                                                                                                            # number of participants
+NP=154                                                                                                                                                            # number of participants
 NTrain=20                                                                                                                                                     # number of practice trials
 NTest=320                                                                                                                                                         # number of test trials
 # NCatch=64                                                                                                                                                        # number of catch trials
@@ -71,6 +71,12 @@ for (a1 in 1:NP){
   CorrectsP=as.numeric(CorrectsTrain[a1,])
   PercentageCorrectTrain[a1,]=sum(CorrectsP)/NTrain*100
 }
+hist(PercentageCorrectTrain, main = "Histogram of Sample Data", xlab = "Value", ylab = "Frequency")
+# finding outliers based on Hampel filter ---------------------------------------------------------------------------------------------------------------------------
+correctPracticesPercentageLB=median(PercentageCorrectTrain) - 3 * mad(PercentageCorrectTrain, constant = 1)
+correctPracticesPercentageUB=median(PercentageCorrectTrain) + 3 * mad(PercentageCorrectTrain, constant = 1)
+correctPracticesPercentageOutliers=t(t(as.numeric(PercentageCorrectTrain <= correctPracticesPercentageLB)))
+row(correctPracticesPercentageOutliers)[which(!correctPracticesPercentageOutliers == 0)]                                                                      # indices of outliers
 # Correct percentage in test session =======================
 SessionIndTest <- SessionInd[,(NTrain+1):340]                                                                      
 catchTrialTest <- catchTrial[,(NTrain+1):NTotal]  
@@ -88,36 +94,48 @@ for (a1 in 1:NP){
   CatchsP=as.numeric(catchTrialTest[a1,]==1)
   PercentageCorrectTest[a1,]=sum(CorrectsP)/sum(CatchsP)*100
 }
+# histogram of correct Catch trials ------------------------------------------------------------------------------------------------------------------------------
+framedData <- data.frame(1:NP,PercentageCorrectTest)
+colnames(framedData) <- c('ParticipantNumber', 'correctCatchesPercentage') 
+
+png(file="C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\CatchCorrectnessHist.png", width=1200, height=700)
+ggplot(data = framedData, aes(x = PercentageCorrectTest)) + geom_histogram(color="black", fill="aquamarine4") + theme_bw(base_size = 14) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + ggtitle("Performance on practice trials") + xlab("correct Percentage") + ylab("number of participants")
+dev.off()
+# finding outliers based on Hampel filter ---------------------------------------------------------------------------------------------------------------------------
+correctTestsPercentageLB=median(PercentageCorrectTest) - 3 * mad(PercentageCorrectTest, constant = 1)
+correctTestsPercentageUB=median(PercentageCorrectTest) + 3 * mad(PercentageCorrectTest, constant = 1)
+correctTestsPercentageOutliers=t(t(as.numeric(PercentageCorrectTest <= correctTestsPercentageLB)))
+row(correctTestsPercentageOutliers)[which(!correctTestsPercentageOutliers == 0)]                                                                      # indices of outliers
 # removing participants 4 and 8 because of low performance ===================================================
-SessionIndTest <- SessionIndTest[-c(4,8),]                                                                      
-catchTrialTest <- catchTrialTest[-c(4,8),]     
-RadiusTest <- RadiusTest[-c(4,8),]       
-NumberOfAgentsTest <- NumberOfAgentsTest[-c(4,8),]                                                                                              # participant's raised hand (right=1; left=0)
-AgentHandTest <- AgentHandTest[-c(4,8),]                                                                                                            # left hand:1; right hand:2
-ParticipantHandTest <- ParticipantHandTest[-c(4,8),]                                                                                                             # left hand:2; right hand:1
-responseTimeTest <- responseTimeTest[-c(4,8),]                                                                                           # this is the RT+fixation duration which was 1s
-DominantColorTest <- DominantColorTest[-c(4,8),] 
-NP=NP-2                  # 2 participants removed
+# SessionIndTest <- SessionIndTest[-c(4,8),]    upOu                                                                  
+# catchTrialTest <- catchTrialTest[-c(4,8),]     
+# RadiusTest <- RadiusTest[-c(4,8),]       
+# NumberOfAgentsTest <- NumberOfAgentsTest[-c(4,8),]                                                                                              # participant's raised hand (right=1; left=0)
+# AgentHandTest <- AgentHandTest[-c(4,8),]                                                                                                            # left hand:1; right hand:2
+# ParticipantHandTest <- ParticipantHandTest[-c(4,8),]                                                                                                             # left hand:2; right hand:1
+# responseTimeTest <- responseTimeTest[-c(4,8),]                                                                                           # this is the RT+fixation duration which was 1s
+# DominantColorTest <- DominantColorTest[-c(4,8),] 
+# NP=NP-2                  # 2 participants removed
 # Following the group in main trials (low density or high density) ==========================================================================
 Follow_lowDensity1=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==1)
-Follow_highDensity1=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==1)
+Follow_highDensity1=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==1)
 Total_lowDensity1=(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==1)
-Total_highDensity1=(RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==1)
+Total_highDensity1=(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==1)
 
 Follow_lowDensity4=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==4)
-Follow_highDensity4=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==4)
+Follow_highDensity4=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==4)
 Total_lowDensity4=(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==4)
-Total_highDensity4=(RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==4)
+Total_highDensity4=(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==4)
 
 Follow_lowDensity7=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==7)
-Follow_highDensity7=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==7)
+Follow_highDensity7=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==7)
 Total_lowDensity7=(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==7)
-Total_highDensity7=(RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==7)
+Total_highDensity7=(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==7)
 
 Follow_lowDensity10=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==10)
-Follow_highDensity10=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==10)
+Follow_highDensity10=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==10)
 Total_lowDensity10=(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==10)
-Total_highDensity10=(RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==10)
+Total_highDensity10=(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==10)
 
 PercentageFollow_lowDensity1 <- matrix(, nrow = NP, ncol = 1)     
 PercentageFollow_highDensity1 <- matrix(, nrow = NP, ncol = 1)     
@@ -172,7 +190,7 @@ confidences <- c(confidenceFollow_lowDensity,confidenceFollow_highDensity)
 df2 <- cbind(df2, confidences)
 colnames(df2) <- c("NAgents","Density","meanValues","confidenceValues")
 AsiColors<- c("darkseagreen3", "darkolivegreen4")
-png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\FollowDensity.png", width=1200, height=700)
+png(file="C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\FollowDensity.png", width=1200, height=700)
 ggplot(df2, aes(x=NAgents, y=meanValues, fill=Density)) + geom_bar(stat='identity', position='dodge') + scale_fill_manual(values=AsiColors , labels=c('low Density', 'high Density')) + theme_bw(base_size = 18) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,4), labels = c(1, 4, 7, 10)) + ggtitle("Following the group") + ylab("Percentage of follow") + labs(fill = " ")+geom_errorbar(aes(ymin=meanValues-confidenceValues, ymax=meanValues+confidenceValues), width=.2, position=position_dodge(.9))
 dev.off()
 
@@ -184,7 +202,7 @@ df3 <- data.frame(DensityFactor, NAgents, FollowPercentage)
 fit1=lm(FollowPercentage~DensityFactor*NAgents,data=df3)
 summary(fit1)
 AsiColorsRegress<- c("darkolivegreen4","darkseagreen3")
-png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\FollowRegressDensity.png", width=1200, height=700)
+png(file="C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\FollowRegressDensity.png", width=1200, height=700)
 ggplot(df3,aes(y=FollowPercentage,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(0,8)) + ggtitle("Following the group") + ylab("Percentage of follow") + labs(fill = " ") 
 dev.off()
 
@@ -202,16 +220,16 @@ RT_lowDensity10 <- matrix(, nrow = NP, ncol = NTest)
 length_lowDensity10=rowSums(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==10)
 # --------------------------------------------------------------------------------------
 RT_highDensity1 <- matrix(, nrow = NP, ncol = NTest)  
-length_highDensity1=rowSums(RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==1)
+length_highDensity1=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==1)
 
 RT_highDensity4 <- matrix(, nrow = NP, ncol = NTest)  
-length_highDensity4=rowSums(RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==4)
+length_highDensity4=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==4)
 
 RT_highDensity7 <- matrix(, nrow = NP, ncol = NTest)  
-length_highDensity7=rowSums(RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==7)
+length_highDensity7=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==7)
 
 RT_highDensity10 <- matrix(, nrow = NP, ncol = NTest)  
-length_highDensity10=rowSums(RadiusTest==4.5 & catchTrialTest==0 & NumberOfAgentsTest==10)
+length_highDensity10=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==10)
 # --------------------------------------------------------------------------------------
 for (a1 in 1:NP){
   RT_lowDensity1[a1,1:length_lowDensity1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==1)]
@@ -219,10 +237,10 @@ for (a1 in 1:NP){
   RT_lowDensity7[a1,1:length_lowDensity7[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==7)]
   RT_lowDensity10[a1,1:length_lowDensity10[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==10)]
   
-  RT_highDensity1[a1,1:length_highDensity1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==4.5 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==1)]
-  RT_highDensity4[a1,1:length_highDensity4[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==4.5 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==4)]
-  RT_highDensity7[a1,1:length_highDensity7[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==4.5 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==7)]
-  RT_highDensity10[a1,1:length_highDensity10[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==4.5 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==10)]
+  RT_highDensity1[a1,1:length_highDensity1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==1)]
+  RT_highDensity4[a1,1:length_highDensity4[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==4)]
+  RT_highDensity7[a1,1:length_highDensity7[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==7)]
+  RT_highDensity10[a1,1:length_highDensity10[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==10)]
 }
 
 # Barplot for Following the group (low density or high density) ==========================================================================
@@ -241,7 +259,7 @@ confidences <- c(confidenceRT_lowDensity,confidenceRT_highDensity)
 df5 <- cbind(df5, confidences)
 colnames(df5) <- c("NAgents","Density","meanValues","confidenceValues")
 AsiColors<- c("darkseagreen3", "darkolivegreen4")
-png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTDensity.png", width=1200, height=700)
+png(file="C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTDensity.png", width=1200, height=700)
 ggplot(df5, aes(x=NAgents, y=meanValues, fill=Density)) + geom_bar(stat='identity', position='dodge') + scale_fill_manual(values=AsiColors , labels=c('low Density', 'high Density')) + theme_bw(base_size = 18) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(0,4)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ")+geom_errorbar(aes(ymin=meanValues-confidenceValues, ymax=meanValues+confidenceValues), width=.2, position=position_dodge(.9))
 dev.off()
 
@@ -253,6 +271,6 @@ df6 <- data.frame(DensityFactor, NAgents, RT)
 fit1=lm(RT~NAgents*DensityFactor,data=df6)
 summary(fit1)
 AsiColorsRegress<- c("darkolivegreen4","darkseagreen3")
-png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTRegressDensity.png", width=1200, height=700)
+png(file="C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTRegressDensity.png", width=1200, height=700)
 ggplot(df6,aes(y=RT,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(0,8)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ") 
 dev.off()
