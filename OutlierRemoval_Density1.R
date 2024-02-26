@@ -105,17 +105,33 @@ dev.off()
 correctTestsPercentageLB=median(PercentageCorrectTest) - 3 * mad(PercentageCorrectTest, constant = 1)
 correctTestsPercentageUB=median(PercentageCorrectTest) + 3 * mad(PercentageCorrectTest, constant = 1)
 correctTestsPercentageOutliers=t(t(as.numeric(PercentageCorrectTest <= correctTestsPercentageLB)))
-row(correctTestsPercentageOutliers)[which(!correctTestsPercentageOutliers == 0)]                                                                      # indices of outliers
-# removing participants 4 and 8 because of low performance ===================================================
-# SessionIndTest <- SessionIndTest[-c(4,8),]                                                                      
-# catchTrialTest <- catchTrialTest[-c(4,8),]     
-# RadiusTest <- RadiusTest[-c(4,8),]       
-# NumberOfAgentsTest <- NumberOfAgentsTest[-c(4,8),]                                                                                              # participant's raised hand (right=1; left=0)
-# AgentHandTest <- AgentHandTest[-c(4,8),]                                                                                                            # left hand:1; right hand:2
-# ParticipantHandTest <- ParticipantHandTest[-c(4,8),]                                                                                                             # left hand:2; right hand:1
-# responseTimeTest <- responseTimeTest[-c(4,8),]                                                                                           # this is the RT+fixation duration which was 1s
-# DominantColorTest <- DominantColorTest[-c(4,8),] 
-# NP=NP-2                  # 2 participants removed
+MyOutliers=row(correctTestsPercentageOutliers)[which(!correctTestsPercentageOutliers == 0)]                                                                      # indices of outliers
+# removing participants MyOutliers because of low performance ===================================================
+SessionIndTest <- SessionIndTest[-MyOutliers,]
+catchTrialTest <- catchTrialTest[-MyOutliers,]
+RadiusTest <- RadiusTest[-MyOutliers,]
+NumberOfAgentsTest <- NumberOfAgentsTest[-MyOutliers,]                                                                                              # participant's raised hand (right=1; left=0)
+AgentHandTest <- AgentHandTest[-MyOutliers,]                                                                                                            # left hand:1; right hand:2
+ParticipantHandTest <- ParticipantHandTest[-MyOutliers,]                                                                                                             # left hand:2; right hand:1
+responseTimeTest <- responseTimeTest[-MyOutliers,]                                                                                           # this is the RT+fixation duration which was 1s
+DominantColorTest <- DominantColorTest[-MyOutliers,]
+NP=NP-length(MyOutliers)                  # 36 participants removed
+# comupting correct percentage after removing the outliers =========
+CorrectsTrain=(ParticipantHandTrain==2 & DominantColorTrain==1)|(ParticipantHandTrain==1 & DominantColorTrain==2)
+PercentageCorrectTrain <- matrix(, nrow = NP, ncol = 1)
+for (a1 in 1:NP){
+  CorrectsP=as.numeric(CorrectsTrain[a1,])
+  PercentageCorrectTrain[a1,]=sum(CorrectsP)/NTrain*100
+}
+
+CorrectsCatch=((ParticipantHandTest==2 & DominantColorTest==1)|(ParticipantHandTest==1 & DominantColorTest==2))&(catchTrialTest==1)
+PercentageCorrectTest <- matrix(, nrow = NP, ncol = 1)
+for (a1 in 1:NP){
+  CorrectsP=as.numeric(CorrectsCatch[a1,])
+  CatchsP=as.numeric(catchTrialTest[a1,]==1)
+  PercentageCorrectTest[a1,]=sum(CorrectsP)/sum(CatchsP)*100
+}
+
 # Following the group in main trials (low density or high density) ==========================================================================
 Follow_lowDensity1=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==1)
 Follow_highDensity1=(((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)) & RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==1)
@@ -260,7 +276,7 @@ df5 <- cbind(df5, confidences)
 colnames(df5) <- c("NAgents","Density","meanValues","confidenceValues")
 AsiColors<- c("darkseagreen3", "darkolivegreen4")
 png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTDensity.png", width=1200, height=700)
-ggplot(df5, aes(x=NAgents, y=meanValues, fill=Density)) + geom_bar(stat='identity', position='dodge') + scale_fill_manual(values=AsiColors , labels=c('low Density', 'high Density')) + theme_bw(base_size = 18) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(0,4)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ")+geom_errorbar(aes(ymin=meanValues-confidenceValues, ymax=meanValues+confidenceValues), width=.2, position=position_dodge(.9))
+ggplot(df5, aes(x=NAgents, y=meanValues, fill=Density)) + geom_bar(stat='identity', position='dodge') + scale_fill_manual(values=AsiColors , labels=c('low Density', 'high Density')) + theme_bw(base_size = 18) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,4), labels = c(1, 4, 7, 10)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ")+geom_errorbar(aes(ymin=meanValues-confidenceValues, ymax=meanValues+confidenceValues), width=.2, position=position_dodge(.9))+ylim(1.8,2.5)
 dev.off()
 
 # Regress plot for Following the group (low density or high density) ==========================================================================
