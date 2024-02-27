@@ -19,6 +19,7 @@ ggplot(my_data, aes(x = Factor1, y = value, fill = Factor2)) +
 dev.off()
 # set.seed(123)                 # when I want to reproduce the same random array
 # ==============================================================================
+# RT ===========================================================================
 ParticipantNumber <-rep(c(seq(1,NP)),8)
 NAgents <- c(rep(c(rep(1,NP),rep(4,NP),rep(7,NP),rep(10,NP)),2))
 GDensity <- c(rep(c(rep(1,NP)),4),rep(c(rep(2,NP)),4))
