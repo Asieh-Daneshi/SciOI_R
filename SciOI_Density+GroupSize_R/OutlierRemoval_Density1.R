@@ -251,6 +251,7 @@ ParticipantNum <- c(rep(seq(1,NP),8))
 density <- c(rep("LowDensity",NP*4),rep("HighDensity",NP*4))
 NumAgents <- c(rep(c(rep(1,NP),rep(2,NP),rep(3,NP),rep(4,NP)),2))
 FollowPercentage <- c(PercentageFollow_lowDensity1,PercentageFollow_lowDensity4,PercentageFollow_lowDensity7,PercentageFollow_lowDensity10,PercentageFollow_highDensity1,PercentageFollow_highDensity4,PercentageFollow_highDensity7,PercentageFollow_highDensity10)
+Repetition <- c(rep(1,NP*8))
 
 df1GMM <- data.frame(ParticipantNum, density, NumAgents, FollowPercentage)
 
@@ -260,9 +261,15 @@ df3GMM <- df2GMM[!is.na(df2GMM$FollowPercentage),]
 # Fit a mixed-effects model =============================================================================================================================================================
 mixed_model <- lmer(FollowPercentage ~ (NumAgents*density) + (1|ParticipantNum), data = df3GMM)
 summary(mixed_model)
+write.csv(df3GMM, "C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\FollowDensity.csv", row.names = FALSE)
 
+# =======================================================================================================================================================================================
+# ANOVA =================================================================================================================================================================================
+library(afex)
+within_anova_Follow <- aov_car(FollowPercentage ~ (NumAgents * density) + Error(ParticipantNum/(NumAgents * density)), data = df3GMM)
 
-
+# Display the ANOVA summary
+summary(within_anova_Follow)
 # ***************************************************************************************************************************************************************************************
 # Response time =========================================================================================================================================================================
 # ***************************************************************************************************************************************************************************************
@@ -343,12 +350,16 @@ density <- c(rep("LowDensity",NP*4),rep("HighDensity",NP*4))
 NumAgents <- c(rep(c(rep(1,NP),rep(2,NP),rep(3,NP),rep(4,NP)),2))
 RT <- c(rowMeans(RT_lowDensity1,na=TRUE),rowMeans(RT_lowDensity4,na=TRUE),rowMeans(RT_lowDensity7,na=TRUE),rowMeans(RT_lowDensity10,na=TRUE),rowMeans(RT_highDensity1,na=TRUE),rowMeans(RT_highDensity4,na=TRUE),rowMeans(RT_highDensity7,na=TRUE),rowMeans(RT_highDensity10,na=TRUE))
 
-df4GMM <- data.frame(ParticipantNum, density, NumAgents, FollowPercentage)
+df4GMM <- data.frame(ParticipantNum, density, NumAgents, RT)
 
-df5GMM <- df4GMM[df1GMM$RT != 0, ]
-df6GMM <- df5GMM[!is.na(df2GMM$RT)]
-
+df5GMM <- df4GMM[df4GMM$RT != 0, ]
+df6GMM <- df5GMM[!is.na(df5GMM$RT),]
 
 # Fit a mixed-effects model =============================================================================================================================================================
 mixed_model <- lmer(RT ~ (NumAgents*density) + (1|ParticipantNum), data = df6GMM)
 summary(mixed_model)
+write.csv(df6GMM, "C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTDensity.csv", row.names = FALSE)
+# =======================================================================================================================================================================================
+# ANOVA =================================================================================================================================================================================
+within_anova_RT <- aov_car(RT ~ (NumAgents * density) + Error(ParticipantNum/(NumAgents * density)), data = df6GMM)
+summary(within_anova_RT)
