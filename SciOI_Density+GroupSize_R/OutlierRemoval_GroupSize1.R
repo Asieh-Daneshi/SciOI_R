@@ -267,8 +267,15 @@ df3GMM <- df2GMM[!is.na(df2GMM$FollowPercentage),]
 # Fit a mixed-effects model =============================================================================================================================================================
 mixed_model <- lmer(FollowPercentage ~ (NumAgents*groupSize) + (1|ParticipantNum), data = df3GMM)
 summary(mixed_model)
+write.csv(df3GMM, "C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\FollowSize.csv", row.names = FALSE)
 
+# =======================================================================================================================================================================================
+# ANOVA =================================================================================================================================================================================
+library(afex)
+within_anova_Follow <- aov_car(FollowPercentage ~ (NumAgents * groupSize) + Error(ParticipantNum/(NumAgents * groupSize)), data = df3GMM)
 
+# Display the ANOVA summary
+summary(within_anova_Follow)
 
 # ***************************************************************************************************************************************************************************************
 # Response time =========================================================================================================================================================================
@@ -359,3 +366,8 @@ df6GMM <- df5GMM[!is.na(df2GMM$RT)]
 # Fit a mixed-effects model =============================================================================================================================================================
 mixed_model <- lmer(RT ~ (NumAgents*GroupSize) + (1|ParticipantNum), data = df6GMM)
 summary(mixed_model)
+write.csv(df6GMM, "C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTSize.csv", row.names = FALSE)
+# =======================================================================================================================================================================================
+# ANOVA =================================================================================================================================================================================
+within_anova_RT <- aov_car(RT ~ (NumAgents * GroupSize) + Error(ParticipantNum/(NumAgents * GroupSize)), data = df6GMM)
+summary(within_anova_RT)

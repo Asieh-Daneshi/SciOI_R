@@ -33,6 +33,6 @@ my_data$value <- my_data$RT
 png(file="C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\ViolinPlot_RT_GroupSize.png", width=1200, height=700)
 ggplot(my_data, aes(x = Factor1, y = value, fill = Factor2)) +
   geom_violin()+
-  scale_fill_manual(values = c("darkseagreen3", "darkolivegreen4"))
-  labs(title = "Violin Plot for follow percentage (Group-Size experiment)", x = "Number of agents", y = "RT")
+  scale_fill_manual(values = c("darkseagreen3", "darkolivegreen4")) + 
+  labs(title = "Violin Plot for RT (Group-Size experiment)", x = "Number of agents", y = "RT")
 dev.off()
