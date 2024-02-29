@@ -3,8 +3,8 @@ close all
 clear
 clc
 % =========================================================================
-MeanFollowDensity=[53.15323,54.39491;56.30096,58.49795;57.17872,56.88741;57.77901,58.1594];
-ConfidenceFollowDensity=[2.063007,2.287971;2.710748,2.778326;2.770083,2.860535;2.807181,2.82243];
+MeanFollowDensity=[52.92045,54.28554;56.72072,57.92588;56.89089,56.59315;57.10588,57.32224];
+ConfidenceFollowDensity=[1.880149,2.148343;2.313582,2.399931;2.377657,2.463902;2.437354,2.439994];
 fig1=figure; hold on
 barFollowDensity=bar([0.9,1.1;1.9,2.1;2.9,3.1;3.9,4.1],MeanFollowDensity,4);
 errorbar([0.875,1.13;1.875,2.13;2.875,3.13;3.875,4.13],MeanFollowDensity,ConfidenceFollowDensity,'.','color','black','linewidth',1.5)
@@ -15,20 +15,21 @@ xticks(1:4)
 xticklabels({'1','4','7','10'})
 legend([barFollowDensity(1),barFollowDensity(2)],'LowDensity','HighDensity','location','eastoutside')
 % =========================================================================
-MeanRTDensity=[1.24598,1.22538;1.22317,1.22238;1.22911,1.21299;1.19319,1.21284];
-ConfidenceRTDensity=[0.1163539,0.1102488;0.1115588,0.1062622;0.1098769,0.104202;0.1054663,0.1049216];
+MeanRTDensity=[1.236115,1.229743;1.22403,1.217019;1.218715,1.210951;1.197278,1.21026];
+ConfidenceRTDensity=[0.10026463,0.09642878;0.09687615,0.09159124;0.09427633,0.09080009;0.09163418,0.09184179];
 fig2=figure; hold on
 barFollowDensity=bar([0.9,1.1;1.9,2.1;2.9,3.1;3.9,4.1],MeanRTDensity,4);
 errorbar([0.875,1.13;1.875,2.13;2.875,3.13;3.875,4.13],MeanRTDensity,ConfidenceRTDensity,'.','color','black','linewidth',1.5)
 set(barFollowDensity(2),'FaceColor','#6e8b3d');
 set(barFollowDensity(1),'FaceColor','#9bcd9b');
-ylim([1 1.5]);
+ylim([1.1 1.35]);
 xticks(1:4)
 xticklabels({'1','4','7','10'})
 legend([barFollowDensity(1),barFollowDensity(2)],'LowDensity','HighDensity','location','eastoutside')
 % =========================================================================
-MeanFollowGroupSize=[54.66842,54.77574;56.80867,56.73589;58.40794,58.79165;58.51744,56.89312];
-ConfidenceFollowGroupSize=[2.655482,2.730132;2.847805,2.768513;2.626176,2.613817;2.963815,2.769661];
+% =========================================================================
+MeanFollowGroupSize=[55.17511,55.46284;57.23721,56.86492;58.42998,58.9611;58.72244,57.4694];
+ConfidenceFollowGroupSize=[2.421258,2.509084;2.606065,2.567683;2.452384,2.353895;2.647363,2.513635];
 fig3=figure; hold on
 barFollowGroupSize=bar([0.9,1.1;1.9,2.1;2.9,3.1;3.9,4.1],MeanFollowGroupSize,4);
 errorbar([0.875,1.13;1.875,2.13;2.875,3.13;3.875,4.13],MeanFollowGroupSize,ConfidenceFollowGroupSize,'.','color','black','linewidth',1.5)
@@ -39,8 +40,8 @@ xticks(1:4)
 xticklabels({'1','4','7','10'})
 legend([barFollowGroupSize(1),barFollowGroupSize(2)],'smallGroup','largeGroup','location','eastoutside')
 % =========================================================================
-MeanRTGroupSize=[1.25578,1.269263;1.252661,1.260367;1.234463,1.286498;1.251039,1.293003];
-ConfidenceRTGroupSize=[0.1181209,0.1241117;0.1160623,0.1200663;0.1135611,0.126915;0.1175447,0.1236891];
+MeanRTGroupSize=[1.269139,1.270549;1.257771,1.264855;1.249501,1.283917;1.258481,1.287078];
+ConfidenceRTGroupSize=[0.1068986,0.1106276;0.1031061,0.1072326;0.1026703,0.1123209;0.103909,0.1090583];
 fig2=figure; hold on
 barFollowGroupSize=bar([0.9,1.1;1.9,2.1;2.9,3.1;3.9,4.1],MeanRTGroupSize,4);
 errorbar([0.875,1.13;1.875,2.13;2.875,3.13;3.875,4.13],MeanRTGroupSize,ConfidenceRTGroupSize,'.','color','black','linewidth',1.5)

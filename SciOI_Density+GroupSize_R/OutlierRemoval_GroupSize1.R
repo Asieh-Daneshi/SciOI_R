@@ -12,7 +12,7 @@ library(ggthemes)
 data <- read_excel("C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\Responses_Main1_150Participants_2024-02-23.xlsx")
 GroupSizeData <- data[data[,3]=="GroupSize",]
 # Group Size ============================================================================================================================================================================
-NP=157                                                                                                                                                           # number of participants
+NP=190                                                                                                                                                           # number of participants
 NTrain=20                                                                                                                                                     # number of practice trials
 NTest=320                                                                                                                                                         # number of test trials                                                                                                                                                       # number of catch trials
 NTotal=NTrain+NTest                                                                                                                           # number of main trials in the test session
@@ -357,10 +357,10 @@ GroupSize <- c(rep("SmallGroup",NP*4),rep("LargeGroup",NP*4))
 NumAgents <- c(rep(c(rep(1,NP),rep(2,NP),rep(3,NP),rep(4,NP)),2))
 RT <- c(rowMeans(RT_smallGroup1,na=TRUE),rowMeans(RT_smallGroup4,na=TRUE),rowMeans(RT_smallGroup7,na=TRUE),rowMeans(RT_smallGroup10,na=TRUE),rowMeans(RT_largeGroup1,na=TRUE),rowMeans(RT_largeGroup4,na=TRUE),rowMeans(RT_largeGroup7,na=TRUE),rowMeans(RT_largeGroup10,na=TRUE))
 
-df4GMM <- data.frame(ParticipantNum, groupSize, NumAgents, FollowPercentage)
+df4GMM <- data.frame(ParticipantNum, groupSize, NumAgents, RT)
 
-df5GMM <- df4GMM[df1GMM$RT != 0, ]
-df6GMM <- df5GMM[!is.na(df2GMM$RT)]
+df5GMM <- df4GMM[df4GMM$RT != 0, ]
+df6GMM <- df5GMM[!is.na(df5GMM$RT),]
 
 
 # Fit a mixed-effects model =============================================================================================================================================================
@@ -369,5 +369,5 @@ summary(mixed_model)
 write.csv(df6GMM, "C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTSize.csv", row.names = FALSE)
 # =======================================================================================================================================================================================
 # ANOVA =================================================================================================================================================================================
-within_anova_RT <- aov_car(RT ~ (NumAgents * GroupSize) + Error(ParticipantNum/(NumAgents * GroupSize)), data = df6GMM)
+within_anova_RT <- aov_car(RT ~ (NumAgents * groupSize) + Error(ParticipantNum/(NumAgents * groupSize)), data = df6GMM)
 summary(within_anova_RT)
