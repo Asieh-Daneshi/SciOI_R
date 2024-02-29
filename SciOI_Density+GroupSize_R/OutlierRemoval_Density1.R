@@ -15,7 +15,7 @@ library(reshape)
 data <- read_excel("C:\\Users\\asiye\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\Responses_Main1_150Participants_2024-02-23.xlsx")
 DensityData <- data[data[,3]=="Density",]
 # Group Density ========================================================================================================================================================================
-NP=154                                                                                                                                                          # number of participants
+NP=199                                                                                                                                                          # number of participants
 NTrain=20                                                                                                                                                    # number of practice trials
 NTest=320                                                                                                                                                        # number of test trials                                                                                                                                                       # number of catch trials
 NTotal=NTrain+NTest                                                                                                                          # number of main trials in the test session
