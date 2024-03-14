@@ -12,10 +12,10 @@ library(ggplot2)
 library(ggthemes)
 library(reshape)
 # read data from the excel file ========================================================================================================================================================
-data <- read_excel("C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\Responses_Pilot2_10Participants_2024-03-05.xlsx")
+data <- read_excel("C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\Responses_Main2_180Participants_2024-03-12.xlsx")
 DensityData <- data[data[,3]=="Density",]
 # Group Density ========================================================================================================================================================================
-NP=10                                                                                                                                                         # number of participants
+NP=173                                                                                                                                                         # number of participants
 NTrain=20                                                                                                                                                    # number of practice trials
 NTest=300                                                                                                                                                        # number of test trials                                                                                                                                                       # number of catch trials
 NTotal=NTrain+NTest                                                                                                                          # number of main trials in the test session
@@ -95,20 +95,21 @@ png(file="C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Den
 ggplot(data = framedData, aes(x = PercentageCorrectTest)) + geom_histogram(color="black", fill="aquamarine4") + theme_bw(base_size = 14) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + ggtitle("Performance on practice trials") + xlab("correct Percentage") + ylab("number of participants")
 dev.off()
 # finding outliers based on Hampel filter ==============================================================================================================================================
-# correctTestsPercentageLB=median(PercentageCorrectTest) - 3 * mad(PercentageCorrectTest, constant = 1)
-# correctTestsPercentageUB=median(PercentageCorrectTest) + 3 * mad(PercentageCorrectTest, constant = 1)
+correctTestsPercentageLB=median(PercentageCorrectTest) - 3 * mad(PercentageCorrectTest, constant = 1)
+correctTestsPercentageUB=median(PercentageCorrectTest) + 3 * mad(PercentageCorrectTest, constant = 1)
 # correctTestsPercentageOutliers=t(t(as.numeric(PercentageCorrectTest <= correctTestsPercentageLB)))
-# MyOutliers=row(correctTestsPercentageOutliers)[which(!correctTestsPercentageOutliers == 0)]                                                                        # indices of outliers
-# # removing participants MyOutliers because of their low performance in catch trials ====================================================================================================
-# SessionIndTest <- SessionIndTest[-MyOutliers,]
-# catchTrialTest <- catchTrialTest[-MyOutliers,]
-# RadiusTest <- RadiusTest[-MyOutliers,]
-# NumberOfAgentsTest <- NumberOfAgentsTest[-MyOutliers,]                                                                                     # participant's raised hand (right=1; left=0)
-# AgentHandTest <- AgentHandTest[-MyOutliers,]                                                                                                                 # left hand:1; right hand:2
-# ParticipantHandTest <- ParticipantHandTest[-MyOutliers,]                                                                                                     # left hand:2; right hand:1
-# responseTimeTest <- responseTimeTest[-MyOutliers,]                                                                                       # this is the RT+fixation duration which was 1s
-# DominantColorTest <- DominantColorTest[-MyOutliers,]
-# NP=NP-length(MyOutliers)                                                                                                                                       # 36 participants removed
+correctTestsPercentageOutliers=t(t(as.numeric(PercentageCorrectTest <= 75)))
+MyOutliers=row(correctTestsPercentageOutliers)[which(!correctTestsPercentageOutliers == 0)]                                                                        # indices of outliers
+# removing participants MyOutliers because of their low performance in catch trials ====================================================================================================
+SessionIndTest <- SessionIndTest[-MyOutliers,]
+catchTrialTest <- catchTrialTest[-MyOutliers,]
+RadiusTest <- RadiusTest[-MyOutliers,]
+NumberOfAgentsTest <- NumberOfAgentsTest[-MyOutliers,]                                                                                     # participant's raised hand (right=1; left=0)
+AgentHandTest <- AgentHandTest[-MyOutliers,]                                                                                                                 # left hand:1; right hand:2
+ParticipantHandTest <- ParticipantHandTest[-MyOutliers,]                                                                                                     # left hand:2; right hand:1
+responseTimeTest <- responseTimeTest[-MyOutliers,]                                                                                       # this is the RT+fixation duration which was 1s
+DominantColorTest <- DominantColorTest[-MyOutliers,]
+NP=NP-length(MyOutliers)                                                                                                                                       # 36 participants removed
 
 # Here we subtract 1 from all response times, because these response times include 1 second for fixation ===============================================================================
 responseTimeTrain=responseTimeTrain-1
@@ -227,7 +228,7 @@ fit1=lm(FollowPercentage~DensityFactor*NAgents,data=df3)
 summary(fit1)
 AsiColorsRegress<- c("darkolivegreen4","darkseagreen3")
 png(file="C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\FollowRegressDensityOnlyAfterP.png", width=1200, height=700)
-ggplot(df3,aes(y=FollowPercentage,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(0,8)) + ggtitle("Following the group") + ylab("Percentage of follow") + labs(fill = " ") 
+ggplot(df3,aes(y=FollowPercentage,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,3), labels = c(1, 3, 5)) + ggtitle("Following the group") + ylab("Percentage of follow") + labs(fill = " ") 
 dev.off()
 
 # =======================================================================================================================================================================================
@@ -251,65 +252,164 @@ mixed_model <- lmer(FollowPercentage ~ (NumAgents*density) + (1|ParticipantNum),
 summary(mixed_model)
 write.csv(df3GMM, "C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\FollowDensityAfterAgnets.csv", row.names = FALSE)
 # ***************************************************************************************************************************************************************************************
-# Response time =========================================================================================================================================================================
+# Response time (follow) =========================================================================================================================================================================
 # ***************************************************************************************************************************************************************************************
-RT_lowDensity1 <- matrix(, nrow = NP, ncol = NTest)  
-length_lowDensity1=rowSums(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==1)
+RT_lowDensityF1 <- matrix(, nrow = NP, ncol = NTest)  
+length_lowDensityF1=rowSums(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==1 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
 
-RT_lowDensity3 <- matrix(, nrow = NP, ncol = NTest)  
-length_lowDensity3=rowSums(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==3)
+RT_lowDensityF3 <- matrix(, nrow = NP, ncol = NTest)  
+length_lowDensityF3=rowSums(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==3 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
 
-RT_lowDensity5 <- matrix(, nrow = NP, ncol = NTest)  
-length_lowDensity5=rowSums(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==5)
+RT_lowDensityF5 <- matrix(, nrow = NP, ncol = NTest)  
+length_lowDensityF5=rowSums(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==5 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-RT_highDensity1 <- matrix(, nrow = NP, ncol = NTest)  
-length_highDensity1=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==1)
+RT_highDensityF1 <- matrix(, nrow = NP, ncol = NTest)  
+length_highDensityF1=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==1 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
 
-RT_highDensity3 <- matrix(, nrow = NP, ncol = NTest)  
-length_highDensity3=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==3)
+RT_highDensityF3 <- matrix(, nrow = NP, ncol = NTest)  
+length_highDensityF3=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==3 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
 
-RT_highDensity5 <- matrix(, nrow = NP, ncol = NTest)  
-length_highDensity5=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==5)
+RT_highDensityF5 <- matrix(, nrow = NP, ncol = NTest)  
+length_highDensityF5=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==5 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# for (a in 1:NP){
+#   RT_Follow[a,length_RTF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)]
+#   RT_Follow[a,length_RTUF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)]
+# }
 for (a1 in 1:NP){
-  RT_lowDensity1[a1,1:length_lowDensity1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==1)]
-  RT_lowDensity3[a1,1:length_lowDensity3[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==3)]
-  RT_lowDensity5[a1,1:length_lowDensity5[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==5)]
-  
-  RT_highDensity1[a1,1:length_highDensity1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==1)]
-  RT_highDensity3[a1,1:length_highDensity3[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==3)]
-  RT_highDensity5[a1,1:length_highDensity5[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==5)]
+  RT_lowDensityF1[a1,1:length_lowDensityF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+  RT_lowDensityF3[a1,1:length_lowDensityF3[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==3 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+  RT_lowDensityF5[a1,1:length_lowDensityF5[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==5 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+
+  RT_highDensityF1[a1,1:length_highDensityF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+  RT_highDensityF3[a1,1:length_highDensityF3[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==3 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+  RT_highDensityF5[a1,1:length_highDensityF5[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==5 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
 }
 # Barplot for response time (low density or high density) ===============================================================================================================================
-meanRT_lowDensity <- c(mean(RT_lowDensity1, na.rm=TRUE),mean(RT_lowDensity3, na.rm=TRUE),mean(RT_lowDensity5, na.rm=TRUE))
-meanRT_highDensity <- c(mean(RT_highDensity1, na.rm=TRUE),mean(RT_highDensity3, na.rm=TRUE),mean(RT_highDensity5, na.rm=TRUE))
+meanRTF_lowDensity <- c(mean(RT_lowDensityF1, na.rm=TRUE),mean(RT_lowDensityF3, na.rm=TRUE),mean(RT_lowDensityF5, na.rm=TRUE))
+meanRTF_highDensity <- c(mean(RT_highDensityF1, na.rm=TRUE),mean(RT_highDensityF3, na.rm=TRUE),mean(RT_highDensityF5, na.rm=TRUE))
 
-stdRT_lowDensity <- c(sd(RT_lowDensity1, na.rm=TRUE),sd(RT_lowDensity3, na.rm=TRUE),sd(RT_lowDensity5, na.rm=TRUE))
-stdRT_highDensity <- c(sd(RT_highDensity1, na.rm=TRUE),sd(RT_highDensity3, na.rm=TRUE),sd(RT_highDensity5, na.rm=TRUE))
-confidenceRT_lowDensity <- 1.96*stdRT_lowDensity/sqrt(NP)
-confidenceRT_highDensity <- 1.96*stdRT_highDensity/sqrt(NP)
+stdRTF_lowDensity <- c(sd(RT_lowDensityF1, na.rm=TRUE),sd(RT_lowDensityF3, na.rm=TRUE),sd(RT_lowDensityF5, na.rm=TRUE))
+stdRTF_highDensity <- c(sd(RT_highDensityF1, na.rm=TRUE),sd(RT_highDensityF3, na.rm=TRUE),sd(RT_highDensityF5, na.rm=TRUE))
+confidenceRTF_lowDensity <- 1.96*stdRTF_lowDensity/sqrt(NP)
+confidenceRTF_highDensity <- 1.96*stdRTF_highDensity/sqrt(NP)
 
 NAgents <- c(seq(1,3))
-df4 <- data.frame(meanRT_lowDensity, meanRT_highDensity, NAgents)
+df4 <- data.frame(meanRTF_lowDensity, meanRTF_highDensity, NAgents)
 df5 <- melt(df4, id.vars='NAgents')
-confidences <- c(confidenceRT_lowDensity,confidenceRT_highDensity)
+confidences <- c(confidenceRTF_lowDensity,confidenceRTF_highDensity)
 df5 <- cbind(df5, confidences)
 colnames(df5) <- c("NAgents","Density","meanValues","confidenceValues")
 AsiColors<- c("darkseagreen3", "darkolivegreen4")
-png(file="C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTDensityOnlyAfterP.png", width=1200, height=700)
+png(file="C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTFDensityOnlyAfterP.png", width=1200, height=700)
 ggplot(df5, aes(x=NAgents, y=meanValues, fill=Density)) + geom_bar(stat='identity', position='dodge') + scale_fill_manual(values=AsiColors , labels=c('low Density', 'high Density')) + theme_bw(base_size = 18) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,3), labels = c(1, 3, 5)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ")+geom_errorbar(aes(ymin=meanValues-confidenceValues, ymax=meanValues+confidenceValues), width=.2, position=position_dodge(.9))
 dev.off()
 
 # Regress plot for response time (low density or high density) ==========================================================================================================================
 NAgents <- c(seq(1,3), seq(1,3))
 DensityFactor <- c(rep("LowDensity",3),rep("HighDensity",3))
-RT <- c(meanRT_lowDensity, meanRT_highDensity)
+RT <- c(meanRTF_lowDensity, meanRTF_highDensity)
 df6 <- data.frame(DensityFactor, NAgents, RT)
 fit1=lm(RT~NAgents*DensityFactor,data=df6)
 summary(fit1)
 AsiColorsRegress<- c("darkolivegreen4","darkseagreen3")
-png(file="C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTRegressDensityOnlyAfterP.png", width=1200, height=700)
-ggplot(df6,aes(y=RT,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(0,8)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ") 
+png(file="C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTFRegressDensityOnlyAfterP.png", width=1200, height=700)
+ggplot(df6,aes(y=RT,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,3), labels = c(1, 3, 5)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ") 
+dev.off()
+# =======================================================================================================================================================================================
+# GMM ===================================================================================================================================================================================
+library(lme4)
+library(lmerTest)
+
+ParticipantNum <- c(rep(seq(1,NP),6))
+density <- c(rep("LowDensity",NP*3),rep("HighDensity",NP*3))
+NumAgents <- c(rep(c(rep(1,NP),rep(2,NP),rep(3,NP)),2))
+RT <- c(rowMeans(RT_lowDensityF1,na=TRUE),rowMeans(RT_lowDensityF3,na=TRUE),rowMeans(RT_lowDensityF5,na=TRUE),rowMeans(RT_highDensityF1,na=TRUE),rowMeans(RT_highDensityF3,na=TRUE),rowMeans(RT_highDensityF5,na=TRUE))
+
+df4GMM <- data.frame(ParticipantNum, density, NumAgents, RT)
+
+df5GMM <- df4GMM[df4GMM$RT != 0, ]
+df6GMM <- df5GMM[!is.na(df5GMM$RT),]
+
+# Fit a mixed-effects model =============================================================================================================================================================
+mixed_model <- lmer(RT ~ (NumAgents*density) + (1|ParticipantNum), data = df6GMM)
+summary(mixed_model)
+write.csv(df6GMM, "C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTFDensityAfterAgents.csv", row.names = FALSE)
+# ***************************************************************************************************************************************************************************************
+# Response time (unfollow) =========================================================================================================================================================================
+# ***************************************************************************************************************************************************************************************
+RT_lowDensityUF1 <- matrix(, nrow = NP, ncol = NTest)  
+length_lowDensityUF1=rowSums(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==1 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+
+RT_lowDensityUF3 <- matrix(, nrow = NP, ncol = NTest)  
+length_lowDensityUF3=rowSums(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==3 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+
+RT_lowDensityUF5 <- matrix(, nrow = NP, ncol = NTest)  
+length_lowDensityUF5=rowSums(RadiusTest==6 & catchTrialTest==0 & NumberOfAgentsTest==5 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RT_highDensityUF1 <- matrix(, nrow = NP, ncol = NTest)  
+length_highDensityUF1=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==1 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+
+RT_highDensityUF3 <- matrix(, nrow = NP, ncol = NTest)  
+length_highDensityUF3=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==3 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+
+RT_highDensityUF5 <- matrix(, nrow = NP, ncol = NTest)  
+length_highDensityUF5=rowSums(RadiusTest==3.3 & catchTrialTest==0 & NumberOfAgentsTest==5 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# for (a in 1:NP){
+#   RT_Follow[a,length_RTF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)]
+#   RT_Follow[a,length_RTUF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)]
+# }
+for (a1 in 1:NP){
+  if(length_lowDensityUF1[a1]!=0){
+    RT_lowDensityUF1[a1,1:length_lowDensityUF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+  }
+  if(length_lowDensityUF3[a1]!=0){
+    RT_lowDensityUF3[a1,1:length_lowDensityUF3[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==3 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+  }
+  if(length_lowDensityUF5[a1]!=0){
+    RT_lowDensityUF5[a1,1:length_lowDensityUF5[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==6 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==5 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+  }
+  if(length_highDensityUF1[a1]!=0){
+    RT_highDensityUF1[a1,1:length_highDensityUF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+  }
+  if(length_highDensityUF3[a1]!=0){
+    RT_highDensityUF3[a1,1:length_highDensityUF3[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==3 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+  }
+  if(length_highDensityUF5[a1]!=0){
+    RT_highDensityUF5[a1,1:length_highDensityUF5[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & NumberOfAgentsTest[a1,]==5 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+  }
+}
+# Barplot for response time (low density or high density) ===============================================================================================================================
+meanRTUF_lowDensity <- c(mean(RT_lowDensityUF1, na.rm=TRUE),mean(RT_lowDensityUF3, na.rm=TRUE),mean(RT_lowDensityUF5, na.rm=TRUE))
+meanRTUF_highDensity <- c(mean(RT_highDensityUF1, na.rm=TRUE),mean(RT_highDensityUF3, na.rm=TRUE),mean(RT_highDensityUF5, na.rm=TRUE))
+
+stdRTUF_lowDensity <- c(sd(RT_lowDensityUF1, na.rm=TRUE),sd(RT_lowDensityUF3, na.rm=TRUE),sd(RT_lowDensityUF5, na.rm=TRUE))
+stdRTUF_highDensity <- c(sd(RT_highDensityUF1, na.rm=TRUE),sd(RT_highDensityUF3, na.rm=TRUE),sd(RT_highDensityUF5, na.rm=TRUE))
+confidenceRTUF_lowDensity <- 1.96*stdRTUF_lowDensity/sqrt(NP)
+confidenceRTUF_highDensity <- 1.96*stdRTUF_highDensity/sqrt(NP)
+
+NAgents <- c(seq(1,3))
+df4 <- data.frame(meanRTUF_lowDensity, meanRTUF_highDensity, NAgents)
+df5 <- melt(df4, id.vars='NAgents')
+confidences <- c(confidenceRTUF_lowDensity,confidenceRTUF_highDensity)
+df5 <- cbind(df5, confidences)
+colnames(df5) <- c("NAgents","Density","meanValues","confidenceValues")
+AsiColors<- c("darkseagreen3", "darkolivegreen4")
+png(file="C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTUFDensityOnlyAfterP.png", width=1200, height=700)
+ggplot(df5, aes(x=NAgents, y=meanValues, fill=Density)) + geom_bar(stat='identity', position='dodge') + scale_fill_manual(values=AsiColors , labels=c('low Density', 'high Density')) + theme_bw(base_size = 18) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,3), labels = c(1, 3, 5)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ")+geom_errorbar(aes(ymin=meanValues-confidenceValues, ymax=meanValues+confidenceValues), width=.2, position=position_dodge(.9))
+dev.off()
+
+# Regress plot for response time (low density or high density) ==========================================================================================================================
+NAgents <- c(seq(1,3), seq(1,3))
+DensityFactor <- c(rep("LowDensity",3),rep("HighDensity",3))
+RT <- c(meanRTUF_lowDensity, meanRTUF_highDensity)
+df6 <- data.frame(DensityFactor, NAgents, RT)
+fit1=lm(RT~NAgents*DensityFactor,data=df6)
+summary(fit1)
+AsiColorsRegress<- c("darkolivegreen4","darkseagreen3")
+png(file="C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTUFRegressDensityOnlyAfterP.png", width=1200, height=700)
+ggplot(df6,aes(y=RT,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,3), labels = c(1, 3, 5)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ") 
 dev.off()
 
 # =======================================================================================================================================================================================
@@ -320,7 +420,7 @@ library(lmerTest)
 ParticipantNum <- c(rep(seq(1,NP),6))
 density <- c(rep("LowDensity",NP*3),rep("HighDensity",NP*3))
 NumAgents <- c(rep(c(rep(1,NP),rep(2,NP),rep(3,NP)),2))
-RT <- c(rowMeans(RT_lowDensity1,na=TRUE),rowMeans(RT_lowDensity3,na=TRUE),rowMeans(RT_lowDensity5,na=TRUE),rowMeans(RT_highDensity1,na=TRUE),rowMeans(RT_highDensity3,na=TRUE),rowMeans(RT_highDensity5,na=TRUE))
+RT <- c(rowMeans(RT_lowDensityUF1,na=TRUE),rowMeans(RT_lowDensityUF3,na=TRUE),rowMeans(RT_lowDensityUF5,na=TRUE),rowMeans(RT_highDensityUF1,na=TRUE),rowMeans(RT_highDensityUF3,na=TRUE),rowMeans(RT_highDensityUF5,na=TRUE))
 
 df4GMM <- data.frame(ParticipantNum, density, NumAgents, RT)
 
@@ -330,4 +430,4 @@ df6GMM <- df5GMM[!is.na(df5GMM$RT),]
 # Fit a mixed-effects model =============================================================================================================================================================
 mixed_model <- lmer(RT ~ (NumAgents*density) + (1|ParticipantNum), data = df6GMM)
 summary(mixed_model)
-write.csv(df6GMM, "C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTDensityAfterAgents.csv", row.names = FALSE)
+write.csv(df6GMM, "C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\RTUFDensityAfterAgents.csv", row.names = FALSE)
