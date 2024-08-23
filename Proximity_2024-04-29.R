@@ -12,10 +12,10 @@ library(ggplot2)
 library(ggthemes)
 library(reshape)
 # read data from the excel file ========================================================================================================================================================
-data <- read_excel("E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\Responses_Pilot1_Proximity_10Participants_2024-04_25.xlsx")
+data <- read_excel("C:\\Users\\Asieh\\Downloads\\SciOI_R-master\\SciOI_R-master\\SciOI_Density+GroupSize_R\\Responses_Main1_272Participants_2024-08-20.xlsx")
 DensityData <- data[data[,3]=="DensityProximity",]
 # Group Density ========================================================================================================================================================================
-NP=10                                                                                                                                                        # number of participants
+NP=344                                                                                                                                                        # number of participants
 NTrain=20                                                                                                                                                    # number of practice trials
 NTest=300                                                                                                                                                        # number of test trials                                                                                                                                                       # number of catch trials
 NTotal=NTrain+NTest                                                                                                                          # number of main trials in the test session
@@ -221,7 +221,8 @@ dev.off()
 # =======================================================================================================================================================================================
 # Regress plot for Following the group (close or far) ====================================================================================================================
 NAgents <- c(seq(1,2), seq(1,2))
-DensityFactor <- c(rep("Close",2),rep("Far",2))
+# DensityFactor <- c(rep("Close",2),rep("Far",2))
+DensityFactor <- c(rep(1,2),rep(2,2))
 FollowPercentage <- c(meanFollow_Close, meanFollow_Far)
 df3 <- data.frame(DensityFactor, NAgents, FollowPercentage)
 fit1=lm(FollowPercentage~DensityFactor*NAgents,data=df3)
@@ -237,7 +238,8 @@ library(lme4)
 library(lmerTest)
 
 ParticipantNum <- c(rep(seq(1,NP),4))
-density <- c(rep("Close",NP*2),rep("Far",NP*2))
+# density <- c(rep("Close",NP*2),rep("Far",NP*2))
+density <- c(rep(1,NP*2),rep(2,NP*2))
 NumAgents <- c(rep(c(rep(1,NP),rep(2,NP)),2))
 FollowPercentage <- c(PercentageFollow_Close4,PercentageFollow_Close7,PercentageFollow_Far4,PercentageFollow_Far7)
 Repetition <- c(rep(1,NP*4))
@@ -251,183 +253,198 @@ df3GMM <- df2GMM[!is.na(df2GMM$FollowPercentage),]
 mixed_model <- lmer(FollowPercentage ~ (NumAgents*density) + (1|ParticipantNum), data = df3GMM)
 summary(mixed_model)
 write.csv(df3GMM, "E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\FolCloseAfterAgnets.csv", row.names = FALSE)
-# ***************************************************************************************************************************************************************************************
-# Response time (follow) =========================================================================================================================================================================
-# ***************************************************************************************************************************************************************************************
-# RT_CloseF1 <- matrix(, nrow = NP, ncol = NTest)  
-# length_CloseF1=rowSums(RadiusTest==9 & catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
-
-RT_CloseF4 <- matrix(, nrow = NP, ncol = NTest)  
-length_CloseF4=rowSums(catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
-
-RT_CloseF7 <- matrix(, nrow = NP, ncol = NTest)  
-length_CloseF7=rowSums(catchTrialTest==0 & TrialConditionTest==3 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
-# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# RT_FarF1 <- matrix(, nrow = NP, ncol = NTest)  
-# length_FarF1=rowSums(RadiusTest==3.3 & catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
-
-RT_FarF4 <- matrix(, nrow = NP, ncol = NTest)  
-length_FarF4=rowSums(catchTrialTest==0 & TrialConditionTest==2 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
-
-RT_FarF7 <- matrix(, nrow = NP, ncol = NTest)  
-length_FarF7=rowSums(catchTrialTest==0 & TrialConditionTest==4 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
-# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# for (a in 1:NP){
-#   RT_Follow[a,length_RTF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)]
-#   RT_Follow[a,length_RTUF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)]
+# # ***************************************************************************************************************************************************************************************
+# # Response time (follow) =========================================================================================================================================================================
+# # ***************************************************************************************************************************************************************************************
+# # RT_CloseF1 <- matrix(, nrow = NP, ncol = NTest)  
+# # length_CloseF1=rowSums(RadiusTest==9 & catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
+# 
+# RT_CloseF4 <- matrix(, nrow = NP, ncol = NTest)  
+# length_CloseF4=rowSums(catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
+# 
+# RT_CloseF7 <- matrix(, nrow = NP, ncol = NTest)  
+# length_CloseF7=rowSums(catchTrialTest==0 & TrialConditionTest==3 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
+# # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# # RT_FarF1 <- matrix(, nrow = NP, ncol = NTest)  
+# # length_FarF1=rowSums(RadiusTest==3.3 & catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
+# 
+# RT_FarF4 <- matrix(, nrow = NP, ncol = NTest)  
+# length_FarF4=rowSums(catchTrialTest==0 & TrialConditionTest==2 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
+# 
+# RT_FarF7 <- matrix(, nrow = NP, ncol = NTest)  
+# length_FarF7=rowSums(catchTrialTest==0 & TrialConditionTest==4 & ((ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)))
+# # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# # for (a in 1:NP){
+# #   RT_Follow[a,length_RTF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)]
+# #   RT_Follow[a,length_RTUF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)]
+# # }
+# for (a1 in 1:NP){
+#   # RT_CloseF1[a1,1:length_CloseF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==9 & catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+#   if(length_CloseF4[a1]!=0){
+#     RT_CloseF4[a1,1:length_CloseF4[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+#   }
+#   if(length_CloseF7[a1]!=0){ 
+#     RT_CloseF7[a1,1:length_CloseF7[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==3 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+#   }
+#   # RT_FarF1[a1,1:length_FarF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+#   if(length_FarF4[a1]!=0){
+#     RT_FarF4[a1,1:length_FarF4[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==2 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+#   }
+#   if(length_FarF7[a1]!=0){
+#     RT_FarF7[a1,1:length_FarF7[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==4 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
+#   }
 # }
-for (a1 in 1:NP){
-  # RT_CloseF1[a1,1:length_CloseF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==9 & catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
-  RT_CloseF4[a1,1:length_CloseF4[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
-  RT_CloseF7[a1,1:length_CloseF7[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==3 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
-  
-  # RT_FarF1[a1,1:length_FarF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
-  RT_FarF4[a1,1:length_FarF4[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==2 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
-  RT_FarF7[a1,1:length_FarF7[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==4 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==2)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==1)))]
-}
-# Barplot for response time (close or far) ===============================================================================================================================
-meanRTF_Close <- c(mean(RT_CloseF4, na.rm=TRUE),mean(RT_CloseF7, na.rm=TRUE))
-meanRTF_Far <- c(mean(RT_FarF4, na.rm=TRUE),mean(RT_FarF7, na.rm=TRUE))
-
-stdRTF_Close <- c(sd(RT_CloseF4, na.rm=TRUE),sd(RT_CloseF7, na.rm=TRUE))
-stdRTF_Far <- c(sd(RT_FarF4, na.rm=TRUE),sd(RT_FarF7, na.rm=TRUE))
-confidenceRTF_Close <- 1.96*stdRTF_Close/sqrt(NP)
-confidenceRTF_Far <- 1.96*stdRTF_Far/sqrt(NP)
-
-NAgents <- c(seq(1,2))
-df4 <- data.frame(meanRTF_Close, meanRTF_Far, NAgents)
-df5 <- melt(df4, id.vars='NAgents')
-confidences <- c(confidenceRTF_Close,confidenceRTF_Far)
-df5 <- cbind(df5, confidences)
-colnames(df5) <- c("NAgents","Density","meanValues","confidenceValues")
-AsiColors<- c("darkseagreen3", "darkolivegreen4")
-png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTFDensityOnlyAfterPProximity.png", width=1200, height=700)
-ggplot(df5, aes(x=NAgents, y=meanValues, fill=Density)) + geom_bar(stat='identity', position='dodge') + scale_fill_manual(values=AsiColors , labels=c('close', 'far')) + theme_bw(base_size = 18) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,2), labels = c(4, 7)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ")+geom_errorbar(aes(ymin=meanValues-confidenceValues, ymax=meanValues+confidenceValues), width=.2, position=position_dodge(.9))
-dev.off()
-
-# Regress plot for response time (close or far) ==========================================================================================================================
-NAgents <- c(seq(1,2), seq(1,2))
-DensityFactor <- c(rep("Close",2),rep("Far",2))
-RT <- c(meanRTF_Close, meanRTF_Far)
-df6 <- data.frame(DensityFactor, NAgents, RT)
-fit1=lm(RT~NAgents*DensityFactor,data=df6)
-summary(fit1)
-AsiColorsRegress<- c("darkolivegreen4","darkseagreen3")
-png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTFRegressDensityOnlyAfterPProximity.png", width=1200, height=700)
-ggplot(df6,aes(y=RT,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,2), labels = c(4, 7)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ") 
-dev.off()
-# =======================================================================================================================================================================================
-# GMM ===================================================================================================================================================================================
-library(lme4)
-library(lmerTest)
-
-ParticipantNum <- c(rep(seq(1,NP),4))
-density <- c(rep("Close",NP*2),rep("Far",NP*2))
-NumAgents <- c(rep(c(rep(1,NP),rep(2,NP)),2))
-RT <- c(rowMeans(RT_CloseF4,na=TRUE),rowMeans(RT_CloseF7,na=TRUE),rowMeans(RT_FarF4,na=TRUE),rowMeans(RT_FarF7,na=TRUE))
-
-df4GMM <- data.frame(ParticipantNum, density, NumAgents, RT)
-
-df5GMM <- df4GMM[df4GMM$RT != 0, ]
-df6GMM <- df5GMM[!is.na(df5GMM$RT),]
-
-# Fit a mixed-effects model =============================================================================================================================================================
-mixed_model <- lmer(RT ~ (NumAgents*density) + (1|ParticipantNum), data = df6GMM)
-summary(mixed_model)
-write.csv(df6GMM, "E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTFDensityAfterAgents.csv", row.names = FALSE)
-# ***************************************************************************************************************************************************************************************
-# Response time (unfollow) =========================================================================================================================================================================
-# ***************************************************************************************************************************************************************************************
-# RT_CloseUF1 <- matrix(, nrow = NP, ncol = NTest)  
-# length_CloseUF1=rowSums(RadiusTest==9 & catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
-
-RT_CloseUF4 <- matrix(, nrow = NP, ncol = NTest)  
-length_CloseUF4=rowSums(catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
-
-RT_CloseUF7 <- matrix(, nrow = NP, ncol = NTest)  
-length_CloseUF7=rowSums(catchTrialTest==0 & TrialConditionTest==3 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
-# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# RT_FarUF1 <- matrix(, nrow = NP, ncol = NTest)  
-# length_FarUF1=rowSums(RadiusTest==3.3 & catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
-
-RT_FarUF4 <- matrix(, nrow = NP, ncol = NTest)  
-length_FarUF4=rowSums(catchTrialTest==0 & TrialConditionTest==2 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
-
-RT_FarUF7 <- matrix(, nrow = NP, ncol = NTest)  
-length_FarUF7=rowSums(catchTrialTest==0 & TrialConditionTest==4 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
-# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# for (a in 1:NP){
-#   RT_Follow[a,length_RTF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)]
-#   RT_Follow[a,length_RTUF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)]
+# # Barplot for response time (close or far) ===============================================================================================================================
+# meanRTF_Close <- c(mean(RT_CloseF4, na.rm=TRUE),mean(RT_CloseF7, na.rm=TRUE))
+# meanRTF_Far <- c(mean(RT_FarF4, na.rm=TRUE),mean(RT_FarF7, na.rm=TRUE))
+# 
+# stdRTF_Close <- c(sd(RT_CloseF4, na.rm=TRUE),sd(RT_CloseF7, na.rm=TRUE))
+# stdRTF_Far <- c(sd(RT_FarF4, na.rm=TRUE),sd(RT_FarF7, na.rm=TRUE))
+# confidenceRTF_Close <- 1.96*stdRTF_Close/sqrt(NP)
+# confidenceRTF_Far <- 1.96*stdRTF_Far/sqrt(NP)
+# 
+# NAgents <- c(seq(1,2))
+# df4 <- data.frame(meanRTF_Close, meanRTF_Far, NAgents)
+# df5 <- melt(df4, id.vars='NAgents')
+# confidences <- c(confidenceRTF_Close,confidenceRTF_Far)
+# df5 <- cbind(df5, confidences)
+# colnames(df5) <- c("NAgents","Density","meanValues","confidenceValues")
+# AsiColors<- c("darkseagreen3", "darkolivegreen4")
+# png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTFDensityOnlyAfterPProximity.png", width=1200, height=700)
+# ggplot(df5, aes(x=NAgents, y=meanValues, fill=Density)) + geom_bar(stat='identity', position='dodge') + scale_fill_manual(values=AsiColors , labels=c('close', 'far')) + theme_bw(base_size = 18) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,2), labels = c(4, 7)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ")+geom_errorbar(aes(ymin=meanValues-confidenceValues, ymax=meanValues+confidenceValues), width=.2, position=position_dodge(.9))
+# dev.off()
+# 
+# # Regress plot for response time (close or far) ==========================================================================================================================
+# NAgents <- c(seq(1,2), seq(1,2))
+# DensityFactor <- c(rep("Close",2),rep("Far",2))
+# RT <- c(meanRTF_Close, meanRTF_Far)
+# df6 <- data.frame(DensityFactor, NAgents, RT)
+# fit1=lm(RT~NAgents*DensityFactor,data=df6)
+# summary(fit1)
+# AsiColorsRegress<- c("darkolivegreen4","darkseagreen3")
+# png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTFRegressDensityOnlyAfterPProximity.png", width=1200, height=700)
+# ggplot(df6,aes(y=RT,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,2), labels = c(4, 7)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ") 
+# dev.off()
+# # =======================================================================================================================================================================================
+# # GMM ===================================================================================================================================================================================
+# library(lme4)
+# library(lmerTest)
+# 
+# ParticipantNum <- c(rep(seq(1,NP),4))
+# density <- c(rep("Close",NP*2),rep("Far",NP*2))
+# NumAgents <- c(rep(c(rep(1,NP),rep(2,NP)),2))
+# RT <- c(rowMeans(RT_CloseF4,na=TRUE),rowMeans(RT_CloseF7,na=TRUE),rowMeans(RT_FarF4,na=TRUE),rowMeans(RT_FarF7,na=TRUE))
+# 
+# df4GMM <- data.frame(ParticipantNum, density, NumAgents, RT)
+# 
+# df5GMM <- df4GMM[df4GMM$RT != 0, ]
+# df6GMM <- df5GMM[!is.na(df5GMM$RT),]
+# 
+# # Fit a mixed-effects model =============================================================================================================================================================
+# mixed_model <- lmer(RT ~ (NumAgents*density) + (1|ParticipantNum), data = df6GMM)
+# summary(mixed_model)
+# write.csv(df6GMM, "E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTFDensityAfterAgents.csv", row.names = FALSE)
+# # ***************************************************************************************************************************************************************************************
+# # Response time (unfollow) =========================================================================================================================================================================
+# # ***************************************************************************************************************************************************************************************
+# # RT_CloseUF1 <- matrix(, nrow = NP, ncol = NTest)  
+# # length_CloseUF1=rowSums(RadiusTest==9 & catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+# 
+# RT_CloseUF4 <- matrix(, nrow = NP, ncol = NTest)  
+# length_CloseUF4=rowSums(catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+# 
+# RT_CloseUF7 <- matrix(, nrow = NP, ncol = NTest)  
+# length_CloseUF7=rowSums(catchTrialTest==0 & TrialConditionTest==3 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+# # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# # RT_FarUF1 <- matrix(, nrow = NP, ncol = NTest)  
+# # length_FarUF1=rowSums(RadiusTest==3.3 & catchTrialTest==0 & TrialConditionTest==1 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+# 
+# RT_FarUF4 <- matrix(, nrow = NP, ncol = NTest)  
+# length_FarUF4=rowSums(catchTrialTest==0 & TrialConditionTest==2 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+# 
+# RT_FarUF7 <- matrix(, nrow = NP, ncol = NTest)  
+# length_FarUF7=rowSums(catchTrialTest==0 & TrialConditionTest==4 & ((ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)))
+# # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# # for (a in 1:NP){
+# #   RT_Follow[a,length_RTF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==2)|(ParticipantHandTest==2 & AgentHandTest==1)]
+# #   RT_Follow[a,length_RTUF[a]]=responseTimeTest[a,(ParticipantHandTest==1 & AgentHandTest==1)|(ParticipantHandTest==2 & AgentHandTest==2)]
+# # }
+# for (a1 in 1:NP){
+#   # if(length_CloseUF1[a1]!=0){
+#   #   RT_CloseUF1[a1,1:length_CloseUF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==9 & catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+#   # }
+#   if(length_CloseUF4[a1]!=0){
+#     RT_CloseUF4[a1,1:length_CloseUF4[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+#   }
+#   if(length_CloseUF7[a1]!=0){
+#     RT_CloseUF7[a1,1:length_CloseUF7[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==3 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+#   }
+#   # if(length_FarUF1[a1]!=0){
+#   #   RT_FarUF1[a1,1:length_FarUF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+#   # }
+#   if(length_FarUF4[a1]!=0){
+#     RT_FarUF4[a1,1:length_FarUF4[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==2 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+#   }
+#   if(length_FarUF7[a1]!=0){
+#     RT_FarUF7[a1,1:length_FarUF7[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==4 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
+#   }
 # }
-for (a1 in 1:NP){
-  # if(length_CloseUF1[a1]!=0){
-  #   RT_CloseUF1[a1,1:length_CloseUF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==9 & catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
-  # }
-  if(length_CloseUF4[a1]!=0){
-    RT_CloseUF4[a1,1:length_CloseUF4[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
-  }
-  if(length_CloseUF7[a1]!=0){
-    RT_CloseUF7[a1,1:length_CloseUF7[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==3 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
-  }
-  # if(length_FarUF1[a1]!=0){
-  #   RT_FarUF1[a1,1:length_FarUF1[a1]]=responseTimeTest[a1,(RadiusTest[a1,]==3.3 & catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==1 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
-  # }
-  if(length_FarUF4[a1]!=0){
-    RT_FarUF4[a1,1:length_FarUF4[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==2 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
-  }
-  if(length_FarUF7[a1]!=0){
-    RT_FarUF7[a1,1:length_FarUF7[a1]]=responseTimeTest[a1,(catchTrialTest[a1,]==0 & TrialConditionTest[a1,]==4 & ((ParticipantHandTest[a1,]==1 & AgentHandTest[a1,]==1)|(ParticipantHandTest[a1,]==2 & AgentHandTest[a1,]==2)))]
-  }
-}
-# Barplot for response time (close or far) ===============================================================================================================================
-meanRTUF_Close <- c(mean(RT_CloseUF4, na.rm=TRUE),mean(RT_CloseUF7, na.rm=TRUE))
-meanRTUF_Far <- c(mean(RT_FarUF4, na.rm=TRUE),mean(RT_FarUF7, na.rm=TRUE))
+# # Barplot for response time (close or far) ===============================================================================================================================
+# meanRTUF_Close <- c(mean(RT_CloseUF4, na.rm=TRUE),mean(RT_CloseUF7, na.rm=TRUE))
+# meanRTUF_Far <- c(mean(RT_FarUF4, na.rm=TRUE),mean(RT_FarUF7, na.rm=TRUE))
+# 
+# stdRTUF_Close <- c(sd(RT_CloseUF4, na.rm=TRUE),sd(RT_CloseUF7, na.rm=TRUE))
+# stdRTUF_Far <- c(sd(RT_FarUF4, na.rm=TRUE),sd(RT_FarUF7, na.rm=TRUE))
+# confidenceRTUF_Close <- 1.96*stdRTUF_Close/sqrt(NP)
+# confidenceRTUF_Far <- 1.96*stdRTUF_Far/sqrt(NP)
+# 
+# NAgents <- c(seq(1,2))
+# df4 <- data.frame(meanRTUF_Close, meanRTUF_Far, NAgents)
+# df5 <- melt(df4, id.vars='NAgents')
+# confidences <- c(confidenceRTUF_Close,confidenceRTUF_Far)
+# df5 <- cbind(df5, confidences)
+# colnames(df5) <- c("NAgents","Density","meanValues","confidenceValues")
+# AsiColors<- c("darkseagreen3", "darkolivegreen4")
+# png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTUFDensityOnlyAfterPProximity.png", width=1200, height=700)
+# ggplot(df5, aes(x=NAgents, y=meanValues, fill=Density)) + geom_bar(stat='identity', position='dodge') + scale_fill_manual(values=AsiColors , labels=c('close', 'far')) + theme_bw(base_size = 18) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,2), labels = c(4, 7)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ")+geom_errorbar(aes(ymin=meanValues-confidenceValues, ymax=meanValues+confidenceValues), width=.2, position=position_dodge(.9))
+# dev.off()
+# 
+# # Regress plot for response time (close or far) ==========================================================================================================================
+# NAgents <- c(seq(1,2), seq(1,2))
+# DensityFactor <- c(rep("Close",2),rep("Far",2))
+# RT <- c(meanRTUF_Close, meanRTUF_Far)
+# df6 <- data.frame(DensityFactor, NAgents, RT)
+# fit1=lm(RT~NAgents*DensityFactor,data=df6)
+# summary(fit1)
+# AsiColorsRegress<- c("darkolivegreen4","darkseagreen3")
+# png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTUFRegressDensityOnlyAfterPProximity.png", width=1200, height=700)
+# ggplot(df6,aes(y=RT,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,2), labels = c(4, 7)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ") 
+# dev.off()
+# 
+# # =======================================================================================================================================================================================
+# # GMM ===================================================================================================================================================================================
+# library(lme4)
+# library(lmerTest)
+# 
+# ParticipantNum <- c(rep(seq(1,NP),4))
+# density <- c(rep("Close",NP*2),rep("Far",NP*2))
+# NumAgents <- c(rep(c(rep(1,NP),rep(2,NP)),2))
+# RT <- c(rowMeans(RT_CloseUF4,na=TRUE),rowMeans(RT_CloseUF7,na=TRUE),rowMeans(RT_FarUF4,na=TRUE),rowMeans(RT_FarUF7,na=TRUE))
+# 
+# df4GMM <- data.frame(ParticipantNum, density, NumAgents, RT)
+# 
+# df5GMM <- df4GMM[df4GMM$RT != 0, ]
+# df6GMM <- df5GMM[!is.na(df5GMM$RT),]
+# 
+# # Fit a mixed-effects model =============================================================================================================================================================
+# mixed_model <- lmer(RT ~ (NumAgents*density) + (1|ParticipantNum), data = df6GMM)
+# summary(mixed_model)
+# write.csv(df6GMM, "E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTUFDensityAfterAgents.csv", row.names = FALSE)
 
-stdRTUF_Close <- c(sd(RT_CloseUF4, na.rm=TRUE),sd(RT_CloseUF7, na.rm=TRUE))
-stdRTUF_Far <- c(sd(RT_FarUF4, na.rm=TRUE),sd(RT_FarUF7, na.rm=TRUE))
-confidenceRTUF_Close <- 1.96*stdRTUF_Close/sqrt(NP)
-confidenceRTUF_Far <- 1.96*stdRTUF_Far/sqrt(NP)
+# Bayesian Analysis =======================================================================================================================================================================
+library(BayesFactor)
+library(ggplot2)
 
-NAgents <- c(seq(1,2))
-df4 <- data.frame(meanRTUF_Close, meanRTUF_Far, NAgents)
-df5 <- melt(df4, id.vars='NAgents')
-confidences <- c(confidenceRTUF_Close,confidenceRTUF_Far)
-df5 <- cbind(df5, confidences)
-colnames(df5) <- c("NAgents","Density","meanValues","confidenceValues")
-AsiColors<- c("darkseagreen3", "darkolivegreen4")
-png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTUFDensityOnlyAfterPProximity.png", width=1200, height=700)
-ggplot(df5, aes(x=NAgents, y=meanValues, fill=Density)) + geom_bar(stat='identity', position='dodge') + scale_fill_manual(values=AsiColors , labels=c('close', 'far')) + theme_bw(base_size = 18) + theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,2), labels = c(4, 7)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ")+geom_errorbar(aes(ymin=meanValues-confidenceValues, ymax=meanValues+confidenceValues), width=.2, position=position_dodge(.9))
-dev.off()
-
-# Regress plot for response time (close or far) ==========================================================================================================================
-NAgents <- c(seq(1,2), seq(1,2))
-DensityFactor <- c(rep("Close",2),rep("Far",2))
-RT <- c(meanRTUF_Close, meanRTUF_Far)
-df6 <- data.frame(DensityFactor, NAgents, RT)
-fit1=lm(RT~NAgents*DensityFactor,data=df6)
-summary(fit1)
-AsiColorsRegress<- c("darkolivegreen4","darkseagreen3")
-png(file="E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTUFRegressDensityOnlyAfterPProximity.png", width=1200, height=700)
-ggplot(df6,aes(y=RT,x=NAgents,color=factor(DensityFactor)))+geom_point()+stat_smooth(method="lm",se=TRUE) + scale_color_manual(values=AsiColorsRegress) + theme_bw(base_size = 18) + theme(text = element_text(size=20),panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank() , axis.line = element_line(size = .5, linetype = "solid", colour = "black")) + scale_x_continuous(name="Number of agents" , breaks=seq(1,2), labels = c(4, 7)) + ggtitle("Response time") + ylab("Response time") + labs(fill = " ") 
-dev.off()
-
-# =======================================================================================================================================================================================
-# GMM ===================================================================================================================================================================================
-library(lme4)
-library(lmerTest)
-
-ParticipantNum <- c(rep(seq(1,NP),4))
-density <- c(rep("Close",NP*2),rep("Far",NP*2))
-NumAgents <- c(rep(c(rep(1,NP),rep(2,NP)),2))
-RT <- c(rowMeans(RT_CloseUF4,na=TRUE),rowMeans(RT_CloseUF7,na=TRUE),rowMeans(RT_FarUF4,na=TRUE),rowMeans(RT_FarUF7,na=TRUE))
-
-df4GMM <- data.frame(ParticipantNum, density, NumAgents, RT)
-
-df5GMM <- df4GMM[df4GMM$RT != 0, ]
-df6GMM <- df5GMM[!is.na(df5GMM$RT),]
-
-# Fit a mixed-effects model =============================================================================================================================================================
-mixed_model <- lmer(RT ~ (NumAgents*density) + (1|ParticipantNum), data = df6GMM)
-summary(mixed_model)
-write.csv(df6GMM, "E:\\OngoingAnalysis\\SciOI_R\\SciOI_Density+GroupSize_R\\RTUFDensityAfterAgents.csv", row.names = FALSE)
+# Initial Bayesian ANOVA
+bf <- generalTestBF(FollowPercentage~NumAgents+density+density:NumAgents, data = df3GMM)
+summary(bf)
